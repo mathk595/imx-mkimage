@@ -22,6 +22,19 @@ vpath $(INCLUDE)
 #print out usage as the default target
 all: $(MKIMG) help
 
+copyevk:
+	@cp ../uboot-imx/u-boot-nodtb.bin iMX8M/
+	@cp ../uboot-imx/arch/arm/dts/fsl-imx8mq-evk.dtb iMX8M/fsl-imx8mq-evk.dtb
+	@cp ../uboot-imx/spl/u-boot-spl.bin iMX8M/
+	@cp ../uboot-imx/u-boot.bin iMX8M/
+
+copytr8:
+	@cp ../uboot-imx/u-boot-nodtb.bin iMX8M/
+	@cp ../uboot-imx/arch/arm/dts/kuk-trizeps8.dtb iMX8M/kuk-trizeps8.dtb
+	@cp ../uboot-imx/spl/u-boot-spl.bin iMX8M/
+	@cp ../uboot-imx/u-boot.bin iMX8M/
+
+
 clean:
 	@rm -f $(MKIMG)
 	@rm -f src/build_info.h

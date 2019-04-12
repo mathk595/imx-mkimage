@@ -122,12 +122,26 @@ u-boot-ddr4-evk.itb: $(dtbs_ddr4_evk)
 	TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ./mkimage_fit_atf.sh $(dtbs_ddr4_evk) > u-boot-ddr4-evk.its
 	./mkimage_uboot -E -p 0x3000 -f u-boot-ddr4-evk.its u-boot-ddr4-evk.itb
 
+dtbs_trizeps8 = kuk-trizeps8.dtb
+u-boot-trizeps8.itb: $(dtbs_trizeps8)
+	./$(PAD_IMAGE) bl31.bin
+	TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ./mkimage_fit_atf.sh $(dtbs_trizeps8) > u-boot-trizeps8.its
+	./mkimage_uboot -E -p 0x3000 -f u-boot-trizeps8.its u-boot-trizeps8.itb
+	@rm -f u-boot-trizeps8.its
+
+
 ifeq ($(HDMI),yes)
 flash_evk: $(MKIMG) signed_hdmi_imx8m.bin u-boot-spl-ddr.bin u-boot.itb
 	./mkimage_imx8 -fit -signed_hdmi signed_hdmi_imx8m.bin -loader u-boot-spl-ddr.bin $(SPL_LOAD_ADDR) -second_loader u-boot.itb 0x40200000 0x60000 -out $(OUTIMG)
 
 flash_evk_emmc_fastboot: $(MKIMG) signed_hdmi_imx8m.bin u-boot-spl-ddr.bin u-boot.itb
 	./mkimage_imx8 -dev emmc_fastboot -fit -signed_hdmi signed_hdmi_imx8m.bin -loader u-boot-spl-ddr.bin $(SPL_LOAD_ADDR) -second_loader u-boot.itb 0x40200000 0x60000 -out $(OUTIMG)
+
+flash_trizeps8: $(MKIMG) signed_hdmi_imx8m.bin u-boot-spl-ddr.bin u-boot-trizeps8.itb
+	./mkimage_imx8 -fit -signed_hdmi signed_hdmi_imx8m.bin -loader u-boot-spl-ddr.bin 0x7E1000 -second_loader u-boot-trizeps8.itb 0x40200000 0x60000 -out $(OUTIMG)
+
+flash_trizeps8_emmc_fastboot: $(MKIMG) signed_hdmi_imx8m.bin u-boot-spl-ddr.bin u-boot-trizeps8.itb
+	./mkimage_imx8 -dev emmc_fastboot -fit -signed_hdmi signed_hdmi_imx8m.bin -loader u-boot-spl-ddr.bin 0x7E1000 -second_loader u-boot-trizeps8.itb 0x40200000 0x60000 -out $(OUTIMG)
 
 flash_dp_evk: $(MKIMG) signed_dp_imx8m.bin u-boot-spl-ddr.bin u-boot.itb
 	./mkimage_imx8 -fit -signed_hdmi signed_dp_imx8m.bin -loader u-boot-spl-ddr.bin $(SPL_LOAD_ADDR) -second_loader u-boot.itb 0x40200000 0x60000 -out $(OUTIMG)
@@ -143,6 +157,10 @@ flash_evk: flash_evk_no_hdmi
 
 flash_evk_emmc_fastboot: flash_evk_no_hdmi_emmc_fastboot
 
+flash_trizeps8: flash_trizeps8_no_hdmi
+
+flash_trizeps8_emmc_fastboot: flash_trizeps8_no_hdmi_emmc_fastboot
+
 flash_ddr4_evk: flash_ddr4_evk_no_hdmi
 
 flash_ddr3l_val: flash_ddr3l_val_no_hdmi
@@ -156,6 +174,13 @@ flash_evk_no_hdmi: $(MKIMG) u-boot-spl-ddr.bin u-boot.itb
 
 flash_evk_no_hdmi_emmc_fastboot: $(MKIMG) u-boot-spl-ddr.bin u-boot.itb
 	./mkimage_imx8 -version $(VERSION) -dev emmc_fastboot -fit -loader u-boot-spl-ddr.bin $(SPL_LOAD_ADDR) -second_loader u-boot.itb 0x40200000 0x60000 -out $(OUTIMG)
+
+flash_trizeps8_no_hdmi: $(MKIMG) u-boot-spl-ddr.bin u-boot-trizeps8.itb
+	./mkimage_imx8 -fit -loader u-boot-spl-ddr.bin 0x7E1000 -second_loader u-boot-trizeps8.itb 0x40200000 0x60000 -out $(OUTIMG)
+
+flash_trizeps8_no_hdmi_emmc_fastboot: $(MKIMG) u-boot-spl-ddr.bin u-boot-trizeps8.itb
+	./mkimage_imx8 -dev emmc_fastboot -fit -loader u-boot-spl-ddr.bin 0x7E1000 -second_loader u-boot-trizeps8.itb 0x40200000 0x60000 -out $(OUTIMG)
+
 
 flash_ddr3l_val_no_hdmi: $(MKIMG) u-boot-spl-ddr3l.bin u-boot-ddr3l.itb
 	./mkimage_imx8 -version $(VERSION) -fit -loader u-boot-spl-ddr3l.bin $(SPL_LOAD_ADDR) -second_loader u-boot-ddr3l.itb 0x40200000 0x60000 -out $(OUTIMG)

@@ -212,6 +212,7 @@ void set_image_hash(boot_img_t *img, char *filename, uint32_t hash_type)
 	FILE *fp = NULL;
 	char sha_command[512];
 	char hash[2 * HASH_MAX_LEN + 1];
+	int i;
 
 	if (img->size == 0)
 		sprintf(sha_command, "sha%dsum /dev/null", hash_type);
@@ -250,7 +251,7 @@ void set_image_hash(boot_img_t *img, char *filename, uint32_t hash_type)
 		exit(EXIT_FAILURE);
 	}
 
-	for(int i = 0; i < strlen(hash)/2; i++){
+	for(i = 0; i < strlen(hash)/2; i++){
 		sscanf(hash + 2*i, "%02hhx", &img->hash[i]);
 	}
 
@@ -266,9 +267,10 @@ uint8_t *flatten_container_header(imx_header_v3_t *imx_header,
 	uint8_t *flat = NULL;
 	uint8_t *ptr = NULL;
 	uint16_t size = 0;
+	int i;
 
 	/* Compute size of all container headers */
-	for (int i = 0; i < containers_count; i++) {
+	for (i = 0; i < containers_count; i++) {
 
 		flash_header_v3_t *container = &imx_header->fhdr[i];
 
@@ -295,20 +297,21 @@ uint8_t *flatten_container_header(imx_header_v3_t *imx_header,
 	ptr = flat;
 	*size_out = size;
 
-	for (int i = 0; i < containers_count; i++) {
+	for (i = 0; i < containers_count; i++) {
 
 		flash_header_v3_t *container = &imx_header->fhdr[i];
 		uint32_t container_start_offset = ptr - flat;
+		int j;
 
 		/* Append container header */
 		append(ptr, container, HEADER_IMG_ARRAY_OFFSET);
 
 		/* Adjust images offset to start from container headers start */
-		for (int j = 0; j < container->num_images; j++) {
+		for (j = 0; j < container->num_images; j++) {
 			container->img[j].offset -= container_start_offset + file_offset;
 		}
 		/* Append each image array entry */
-		for (int j = 0; j < container->num_images; j++) {
+		for (j = 0; j < container->num_images; j++) {
 			append(ptr, &container->img[j], sizeof(boot_img_t));
 		}
 
