@@ -29,11 +29,18 @@ copyevk:
 	@cp ../uboot-imx/u-boot.bin iMX8M/
 
 copytr8:
+	@cp iMX8M/bl31-imx8mq.bin iMX8M/bl31.bin
 	@cp ../uboot-imx/u-boot-nodtb.bin iMX8M/
 	@cp ../uboot-imx/arch/arm/dts/kuk-trizeps8.dtb iMX8M/kuk-trizeps8.dtb
 	@cp ../uboot-imx/spl/u-boot-spl.bin iMX8M/
 	@cp ../uboot-imx/u-boot.bin iMX8M/
 
+copytr8mini:
+	@cp iMX8M/bl31-imx8mm.bin iMX8M/bl31.bin
+	@cp ../uboot-imx/u-boot-nodtb.bin iMX8M/
+	@cp ../uboot-imx/arch/arm/dts/kuk-trizeps8mini.dtb iMX8M/kuk-trizeps8.dtb
+	@cp ../uboot-imx/spl/u-boot-spl.bin iMX8M/
+	@cp ../uboot-imx/u-boot.bin iMX8M/
 
 clean:
 	@rm -f $(MKIMG)
